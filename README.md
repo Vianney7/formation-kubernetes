@@ -58,6 +58,8 @@ Créer un service global-pc qui délivre le traffic sur son port 8080 avec le po
 
 Vérifier avec un wget exécuté dans un pod basé sur l'image d'ubuntu la requète `wget http://global-pc:8080/` retourne les messages des pods des deux déploiements.
 
+Réponse:
+
 ```yaml
 ---
 apiVersion: apps/v1
@@ -164,4 +166,55 @@ spec:
     app: nginx
   type: ClusterIP
 ```
+## Exercice 3
 
+Créer un pod nginx avec une configuration modifié (les messages de logs commencent tous par la chaîne de caractères "YOLO") en montant un fichier nginx.conf modifié à l'emplacement /etc/nginx/nginx.conf doit 
+
+Solution:
+
+- extraire le fichier original de configuration de l'image docker nginx
+
+```shell
+docker run --namespace nginx nginx
+docker cp nginx:/etc/nginx/nginx.conf .
+docker rm -v -f nginx
+```
+
+- modifier le fichier nginx.conf comme suit :
+
+```
+[...]
+    log_format  main  'YOLO $remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+[...]
+```
+
+- créer un config map contenant le fichier nginx.conf:
+
+```shell
+kubectl create configmap nginx-extra --from-file=nginx.conf=nginx.conf
+```
+
+- déployer le pod nginx avec le montage du volume basé sur le configmap:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-yolo
+spec:
+  containers:
+  - image: nginx
+    name: nginx-yolo
+    volumeMounts:
+    - name: config-volume
+      mountPath: /etc/config
+  volumes:
+    - name: config-volume
+      configMap:
+        name: nginx-extra
+        items:
+        - key: nginx.conf
+          path: nginx.conf
+```
