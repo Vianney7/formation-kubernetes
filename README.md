@@ -218,3 +218,9 @@ spec:
         - key: nginx.conf
           path: nginx.conf
 ```
+
+## Exercice XX
+
+Déploiement d'une application mongo-express (exposé par un ingress controller) avec une base de données mongo.
+
+- [Déploiement de la base de données mongo dans son namespace mongo](./mongo-mongo.yaml)
