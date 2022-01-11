@@ -45,7 +45,123 @@ spec:
     - name: shared-data
       mountPath: /pod-data
     command: ["/bin/sh"]
-    args: ["-c", "echo Hello World > /pod-data/index.html"
+    args: ["-c", "echo Hello World > /pod-data/index.html"]
 ```
 
 ## Exercice 2
+
+Créer deux déploiements basé sur le pod du premier exercice :
+- le premier tc1 qui déploie un replica du pod avec le message "Hello from TC1" retourné par le nginx
+- le premier tc2 qui déploie un replica du pod avec le message "Hello from TC2" retourné par le nginx
+
+Créer un service global-pc qui délivre le traffic sur son port 8080 avec le port 80 des pods des déploiement tc1 et tc2.
+
+Vérifier avec un wget exécuté dans un pod basé sur l'image d'ubuntu la requète `wget http://global-pc:8080/` retourne les messages des pods des deux déploiements.
+
+```yaml
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tc1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      version: tc1
+  template:
+    metadata:
+      labels:
+        app: nginx
+        version: tc1
+    spec:
+      volumes:
+      - name: shared-data
+        emptyDir: {}
+      containers:
+      - name: nginx-container
+        image: nginx
+        volumeMounts:
+        - name: shared-data
+          mountPath: /usr/share/nginx/html
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          timeoutSeconds: 1
+          failureThreshold: 3
+      - name: busybox-container
+        image: busybox
+        command: ["/bin/sh"]
+        args: ["-c", "while true ; do sleep 5 ; wget -O- http://localhost:80/ ; done"]
+      initContainers:
+      - name: debian-container
+        image: debian
+        volumeMounts:
+        - name: shared-data
+          mountPath: /pod-data
+        command: ["/bin/sh"]
+        args: ["-c", "echo Hello from TC1 > /pod-data/index.html"]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tc2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      version: tc2
+  template:
+    metadata:
+      labels:
+        app: nginx
+        version: tc2
+    spec:
+      volumes:
+      - name: shared-data
+        emptyDir: {}
+      containers:
+      - name: nginx-container
+        image: nginx
+        volumeMounts:
+        - name: shared-data
+          mountPath: /usr/share/nginx/html
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          timeoutSeconds: 1
+          failureThreshold: 3
+      - name: busybox-container
+        image: busybox
+        command: ["/bin/sh"]
+        args: ["-c", "while true ; do sleep 5 ; wget -O- http://localhost:80/ ; done"]
+      initContainers:
+      - name: debian-container
+        image: debian
+        volumeMounts:
+        - name: shared-data
+          mountPath: /pod-data
+        command: ["/bin/sh"]
+        args: ["-c", "echo Hello from TC2 > /pod-data/index.html"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: global-pc
+spec:
+  ports:
+  - name: http-web
+    port: 8080
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: nginx
+  type: ClusterIP
+```
+
