@@ -224,3 +224,4 @@ spec:
 Déploiement d'une application mongo-express (exposé par un ingress controller) avec une base de données mongo.
 
 - [Déploiement de la base de données mongo dans son namespace mongo](./mongo-mongo.yaml)
+- [Déploiement de l'application web mongo-express dans son namespace mongo-express](./mongo-mongo-express.yaml)

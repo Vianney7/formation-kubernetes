@@ -1,0 +1,55 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mongo-express
+---
+apiVersion: v1
+data:
+  ME_CONFIG_MONGODB_SERVER: mongo.mongo
+kind: ConfigMap
+metadata:
+  name: mongo-express
+  namespace: mongo-express
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-express
+  namespace: mongo-express
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo-express
+  template:
+    metadata:
+      labels:
+        app: mongo-express
+      name: mongo-express
+    spec:
+      containers:
+      - image: mongo-express
+        name: mongo-express
+        ports:
+        - containerPort: 8081
+        envFrom:
+        - configMapRef:
+            name: mongo-express
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mongo-express
+  name: mongo-express
+  namespace: mongo-express
+spec:
+  ports:
+  - name: http-web
+    port: 8081
+    protocol: TCP
+    targetPort: 8081
+  selector:
+    app: mongo
+  type: ClusterIP
