@@ -1,0 +1,67 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mongo
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo
+  namespace: mongo
+spec:
+  accessModes:
+    - ReadWriteOncePod
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 8Gi
+  storageClassName: standard
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo
+  namespace: mongo
+spec:
+  replicas: 1
+  strategy:
+    type: "Recreate"
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+      - image: mongo
+        name: mongo
+        ports:
+        - name: tcp-mongo
+          containerPort: 27017
+        volumeMounts:
+        - mountPath: "/data/db"
+          name: mongo-pvc
+      volumes:
+      - name: mongo-pvc
+        persistentVolumeClaim:
+          claimName: mongo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mongo
+  name: mongo
+  namespace: mongo
+spec:
+  ports:
+  - name: tcp-mongo
+    port: 27017
+    protocol: TCP
+    targetPort: tcp-mongo
+  selector:
+    app: mongo
+  type: ClusterIP

@@ -230,9 +230,15 @@ Déploiement d'une application mongo-express (exposé par un ingress controller)
 
 Modifier le précédent exemple pour permettre la sauvegarde des données du MongoDB via un PersistenceVolumeClaim.
 
-Attention: il ne peux exister qu'une instance du pod MongoDB et sa stratégie de mise-à-jour doît être Recreate.
+Attention: 
+- il ne peux exister qu'une instance du pod MongoDB référençant le PVC
+- stratégie de mise-à-jour doît être Recreate (pour éviter que deux pods référencent le même PVC pendant la mise-à-jour).
 
-- [Déploiement mongo avec vpc dans son namespace mongo](./mongo-mongo-pvc.yaml)
+- [Déploiement mongo avec vpc avec accès ReadWriteOnce dans son namespace mongo](./mongo-mongo-pvc.yaml)
+
+Un autre exemple avec le mode d'accès ReadWriteOncePod pour garantir qu'un seul pod soit connecté au PV ([ne gonctionne qu'à partir de la version 1.22 en alpha avec la feature gate activé pour cett option](https://kubernetes.io/blog/2021/09/13/read-write-once-pod-access-mode-alpha/)).
+
+- [Déploiement mongo avec vpc avec accès ReadWriteOncePod dans son namespace mongo](./mongo-mongo-pvc-pod.yaml)
 
 
 
