@@ -219,14 +219,14 @@ spec:
           path: nginx.conf
 ```
 
-## Exercice XX
+## Exercice 4
 
 Déploiement d'une application mongo-express (exposé par un ingress controller) avec une base de données mongo.
 
 - [Déploiement de la base de données mongo dans son namespace mongo](./mongo-mongo.yaml)
 - [Déploiement de l'application web mongo-express dans son namespace mongo-express](./mongo-mongo-express.yaml)
 
-## Exercice XX+1
+## Exercice 5
 
 Modifier le précédent exemple pour permettre la sauvegarde des données du MongoDB via un PersistenceVolumeClaim.
 
@@ -243,4 +243,14 @@ Un autre exemple avec le mode d'accès ReadWriteOncePod pour garantir qu'un seul
 - [Déploiement mongo avec vpc avec accès ReadWriteOncePod dans son namespace mongo](./mongo-mongo-pvc-pod.yaml)
 
 
+## Exercice 6
 
+Ajouter des network policies à l'exercice numéro 4 :
+
+- mongo-express ne doit accepter que des requètes provenant de ingress-nginx et n'envoyer des requètes que sur le DNS et la base de données mongo.
+- mongo ne doit accepter que des requètes de mongo-express et n'envoyer des requètes que sur le DNS
+
+Solution :
+
+- [pour mongo express](./mongo-mongo-express-network-policy.yaml)
+- [pour mongo](./mongo-mongo-network-policy.yaml)
