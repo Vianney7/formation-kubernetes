@@ -225,3 +225,14 @@ Déploiement d'une application mongo-express (exposé par un ingress controller)
 
 - [Déploiement de la base de données mongo dans son namespace mongo](./mongo-mongo.yaml)
 - [Déploiement de l'application web mongo-express dans son namespace mongo-express](./mongo-mongo-express.yaml)
+
+## Exercice XX+1
+
+Modifier le précédent exemple pour permettre la sauvegarde des données du MongoDB via un PersistenceVolumeClaim.
+
+Attention: il ne peux exister qu'une instance du pod MongoDB et sa stratégie de mise-à-jour doît être Recreate.
+
+- [Déploiement mongo avec vpc dans son namespace mongo](./mongo-mongo.yaml)
+
+
+
