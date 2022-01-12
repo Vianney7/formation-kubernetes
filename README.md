@@ -232,7 +232,7 @@ Modifier le précédent exemple pour permettre la sauvegarde des données du Mon
 
 Attention: il ne peux exister qu'une instance du pod MongoDB et sa stratégie de mise-à-jour doît être Recreate.
 
-- [Déploiement mongo avec vpc dans son namespace mongo](./mongo-mongo.yaml)
+- [Déploiement mongo avec vpc dans son namespace mongo](./mongo-mongo-pvc.yaml)
 
 
 
