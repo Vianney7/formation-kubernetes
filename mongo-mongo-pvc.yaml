@@ -4,6 +4,20 @@ kind: Namespace
 metadata:
   name: mongo
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo
+  namespace: mongo
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 8Gi
+  storageClassName: standard
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -11,6 +25,8 @@ metadata:
   namespace: mongo
 spec:
   replicas: 1
+  strategy:
+    type: "Recreate"
   selector:
     matchLabels:
       app: mongo
@@ -25,6 +41,13 @@ spec:
         ports:
         - name: tcp-mongo
           containerPort: 27017
+        volumeMounts:
+        - mountPath: "/data/db"
+          name: mongo-pvc
+      volumes:
+      - name: mongo-pvc
+        persistentVolumeClaim:
+          claimName: mongo
 ---
 apiVersion: v1
 kind: Service

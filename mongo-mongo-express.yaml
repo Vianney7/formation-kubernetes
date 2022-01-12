@@ -32,7 +32,8 @@ spec:
       - image: mongo-express
         name: mongo-express
         ports:
-        - containerPort: 8081
+        - name: http-web
+          containerPort: 8081
         envFrom:
         - configMapRef:
             name: mongo-express
@@ -49,7 +50,7 @@ spec:
   - name: http-web
     port: 8081
     protocol: TCP
-    targetPort: 8081
+    targetPort: http-web
   selector:
     app: mongo-express
   type: ClusterIP
