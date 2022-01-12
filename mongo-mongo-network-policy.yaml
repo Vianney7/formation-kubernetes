@@ -20,6 +20,7 @@ spec:
               app: mongo-express
       ports:
         - port: 27017
+          protocol: TCP
   egress:
     - to:
         - namespaceSelector: 

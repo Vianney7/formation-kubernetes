@@ -17,6 +17,7 @@ spec:
               kubernetes.io/metadata.name: ingress-nginx
       ports:
         - port: 8081
+          protocol: TCP
   egress:
     - to:
         - namespaceSelector: 
@@ -37,3 +38,4 @@ spec:
               app: mongo
       ports:
         - port: 27017
+          protocol: TCP
