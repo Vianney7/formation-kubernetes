@@ -210,14 +210,13 @@ spec:
     name: nginx-yolo
     volumeMounts:
     - name: config-volume
-      mountPath: /etc/config
+      mountPath: "/etc/nginx/nginx.conf"
+      subPath: "nginx.conf"
+      readOnly: true      
   volumes:
     - name: config-volume
       configMap:
         name: nginx-extra
-        items:
-        - key: nginx.conf
-          path: nginx.conf
 ```
 
 ### Exercice 3.2
