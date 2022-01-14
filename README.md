@@ -168,11 +168,9 @@ spec:
 ```
 ## Exercice 3
 
-Créer un pod nginx avec une configuration modifié (les messages de logs commencent tous par la chaîne de caractères "YOLO") en montant un fichier nginx.conf modifié à l'emplacement /etc/nginx/nginx.conf doit 
+Créer un pod nginx avec une configuration modifié dans le nginx.conf (les messages de logs commencent tous par la chaîne de caractères "YOLO").
 
-Solution:
-
-- extraire le fichier original de configuration de l'image docker nginx
+Comment extraire le fichier original de configuration de l'image docker nginx et le modifier:
 
 ```shell
 docker run --namespace nginx nginx
@@ -189,6 +187,9 @@ docker rm -v -f nginx
                       '"$http_user_agent" "$http_x_forwarded_for"';
 [...]
 ```
+### Exercice 3.1
+
+En montant un fichier nginx.conf modifié à l'emplacement /etc/nginx/nginx.conf :
 
 - créer un config map contenant le fichier nginx.conf:
 
@@ -217,6 +218,51 @@ spec:
         items:
         - key: nginx.conf
           path: nginx.conf
+```
+
+### Exercice 3.2
+
+En insérant le fichier de configuration dans une nouvelle image stockée dans le docker hub.
+
+- Création du Dockerfile :
+
+```dockerfile
+FROM nginx
+
+COPY ./nginx.conf /etc/nginx/nginx.conf
+```
+
+- Build et push de l'image sur docker hub
+
+```shell
+docker login
+docker build -t [your-dockerhub-id]/nginx .
+docker push [your-dockerhub-id]/nginx
+```
+
+- Création du secret pour docker hub 
+
+```shell
+kubectl create secret docker-registry \
+  dockerhub \
+  --docker-username=[your-dockerhub-id] \
+  --docker-password=[your-password] \
+  --docker-email=[your-email]
+```
+
+- Déployer le conteneur
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-yolo2
+spec:
+  containers:
+  - image: [your-dockerhub-id]/nginx
+    name: nginx-yolo2
+  imagePullSecrets:
+  - dockerhub
 ```
 
 ## Exercice 4
